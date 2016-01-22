@@ -149,10 +149,7 @@ function pointInTriangleFull(p,a,b,c){
     return (uv[0]>=0&&uv[1]>=0&&uv[0]+uv[1]<1);
 }
 
-//this method works!
 function pointToTriTrans(vel,delta,point,a,b,c,normal){
-    //var normal = new THREE.Vector3(0,0,0);
-    //normal = normal.crossVectors(a.clone().sub(c),b.clone().sub(c));
     var nD = normal.dot(vel);
     if (Math.abs(nD) < epsilon){
         //I think this case would be an edge to edge
@@ -173,7 +170,6 @@ function pointToTriTrans(vel,delta,point,a,b,c,normal){
     }
 }
 
-//now it should hopefully work
 function edgeToEdgeTrans(vel,delta,a,b,c,d){
     var normal = new THREE.Vector3(0,0,0);
     var ta = a.clone().sub(b);
@@ -229,21 +225,14 @@ function makeRotationSpace(rots,com){
     return [rotMm,rotMmInv];
 }
 
-//oh sweet jahova I pray this works
 //give it points in rotation space
 function pointToTriRot(mul,delta,tp,ta,tb,tc,normal){
-    //console.log(rot,com);
-    //rot should be normalized and factored into delta at the beginning
-    //now solve
-    //var normal = new THREE.Vector3().crossVectors(tc.clone().sub(tb),ta.clone().sub(tb));
-    //normal.normalize();
     if (normal.dot(new THREE.Vector3(0,0,1)) > 1-epsilon){
         return -1;
     } else {
         //set up the plane
         var d = ta.dot(normal);
         m = Math.sqrt(tp.x*tp.x+tp.y*tp.y);
-        //console.log(d);
         var g = (d-normal.z*tp.z)/m;
         
         //solve for y
@@ -260,10 +249,7 @@ function pointToTriRot(mul,delta,tp,ta,tb,tc,normal){
         var t0 = Math.atan2(yp,xp);
         var t1 = Math.atan2(ym,xm);
         var angleAdder = -Math.atan2(tp.y,tp.x);
-        //t0 = Math.PI-t0;
         t1+=angleAdder;
-        /*if (t1 < 0)
-            t1=t1+Math.PI*2;*/
         t0+=angleAdder;
         while(t0 >= Math.PI*2) t0-=Math.PI*2;
         while(t1 >= Math.PI*2) t1-=Math.PI*2;
@@ -341,11 +327,6 @@ function edgeToEdgeRot(delta,ta,tb,tc,td){
     var endTb;
     var endRay;
     var l;
-    /*endTa = new THREE.Vector3(xm*ta.x-ym*ta.y,xm*ta.y+ym*ta.x,ta.z);
-    endTb = new THREE.Vector3(xm*tb.x-ym*tb.y,xm*tb.y+ym*tb.x,tb.z);
-    endTa2 = new THREE.Vector3(xp*ta.x-yp*ta.y,xp*ta.y+yp*ta.x,ta.z);
-    endTb2 = new THREE.Vector3(xp*tb.x-yp*tb.y,xp*tb.y+yp*tb.x,tb.z);
-    return [endTa,endTb,endTa2,endTb2];*/
     if (t0 <= delta){
         endTa = new THREE.Vector3(xp*ta.x-yp*ta.y,xp*ta.y+yp*ta.x,ta.z);
         endTb = new THREE.Vector3(xp*tb.x-yp*tb.y,xp*tb.y+yp*tb.x,tb.z);
@@ -384,7 +365,7 @@ function collide(rigidbody1,rigidbody2,delta,rot){
         mat = makeRotationSpace(rigidbody1.angularVelocity,rigidbody1.com);
         rigidbody1.geom.applyMatrix(mat[0]);
         rigidbody2.geom.applyMatrix(mat[0]);
-        //delta*=rigidbody1.angularVelocity.length();
+        delta*=rigidbody1.angularVelocity.length();
     }
     
     
@@ -465,11 +446,8 @@ function collide(rigidbody1,rigidbody2,delta,rot){
     if (rot){
         rigidbody1.geom.applyMatrix(mat[1]);
         rigidbody2.geom.applyMatrix(mat[1]);
-        //delta /= rigidbody1.angularVelocity.length();
     }
     
-    if (smallestT > -1)
-        console.log(smallestT)
 
     if (smallestT > delta)
         return -1;
